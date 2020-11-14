@@ -1,14 +1,18 @@
+//Adding the necessary modules
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Dimensions, FlatList} from 'react-native';
-
-const screen = Dimensions.get('window');
+//
+const screen = Dimensions.get('window'); //getting device dimensions
+// Formatting number to the form 00:00
 const formatNumber = number => `0${number}`.slice(-2);
 const getRemaining = (time) => {
   const mins = Math.floor(time / 60);
   const secs = time - mins * 60;
   return {mins:formatNumber(mins), secs:formatNumber(secs)};
-}
+};
+//
+// Hooks states
 export default function App() {
   const [isActive, setIsActive] = useState(false);
   const [showHide, setShowHide] = useState(true);
@@ -16,12 +20,16 @@ export default function App() {
   const [lapList, setLapList] = useState([]);
   const {mins, secs} = getRemaining(timesUp);
 
-  
+  // Adding values: id key and lap time, to the list
   measurement = () =>{
     lapList.unshift(
-      {key: `${lapList.length +1}`, laptime: `${mins}:${secs}`}, );
-    console.log(lapList)
+      {
+        key: `${lapList.length +1}`, 
+        laptime: `${mins}:${secs}`
+      },);
   };
+  //
+  // Setting the value to true, false is used to hide buttons
   useEffect(() => {
     if(timesUp === 0){
       setShowHide(true);
@@ -31,6 +39,8 @@ export default function App() {
     };
 
   });
+  //
+  //time measurement when value 'isActive' is true
   useEffect(() => {
     let interval =null;
     if(isActive){
@@ -42,26 +52,34 @@ export default function App() {
     }
     return () => clearInterval(interval);
   },[isActive, timesUp]);
-
+//
   return (
     <View style={styles.container}>
-      <View style={{flex:1,alignItems:'center', justifyContent:'flex-end'}}>
+      {/* time display */}
+      <View style={{flex:2,alignItems:'center', justifyContent:'flex-end'}}>
         <View style={{width:screen.width/2, height:screen.width/2, borderWidth:5, borderColor:'#383428', borderRadius:screen.width/2, alignItems:'center', justifyContent:'center'}}>
           <Text style={styles.showTime}>{`${mins}:${secs}`}</Text>
         </View>
       </View>
-      <View style={{flex:1,alignItems:'center', marginTop:30,}}>
+      {/* */}
+      {/* list display */}
+      <View style={{flex:2,alignItems:'center',}}>
       <FlatList
           data ={lapList}
           renderItem ={({item}) =>(
           <Text style={styles.item}>{lapList.length == 0 ? '' : `Lap ${item.key}.  ${item.laptime}`}</Text>
           )}
         />
+      
+
       </View>
+      {/* */}
+      {/* three buttons at the end of page  */}
       <View style={{flex: 1,justifyContent: 'flex-end',marginBottom: 36}}>
         <View style={{flexDirection:'row',justifyContent:'space-around' }}>
           <TouchableOpacity style={styles.refreshButton}>
-            <Text style={styles.refreshText} onPress={()=>{setTimesUp(0); setIsActive(false); lapList.length = 0;}}>{showHide ? '' : 'Reset'}</Text>
+            {/* button is hidden when the value is false or true*/}
+            <Text style={styles.refreshText} onPress={()=>{setTimesUp(0); setIsActive(false); lapList.length = 0;}}>{showHide ? '' : 'Reset'}</Text> 
           </TouchableOpacity>
           <TouchableOpacity  onPress={() => {setIsActive(!isActive);}} style={styles.startButton}>
             <Text style={styles.startText}>{isActive ? '■' : '	▶'}</Text>
@@ -72,6 +90,7 @@ export default function App() {
 
         </View>
       </View>
+      {/* */}
       <StatusBar style="auto" />
     </View>
   );
@@ -82,7 +101,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     flexDirection:'column',
-    backgroundColor:'black'
+    backgroundColor:'black',
   },
   showTime:{
     fontSize: 50,
@@ -120,6 +139,7 @@ const styles = StyleSheet.create({
     fontSize:25,
 
   },
+// 
 
 
 });
